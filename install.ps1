@@ -308,18 +308,18 @@ $controls.NextBtn.Add_Click({
                 $WshShell = New-Object -ComObject WScript.Shell
                 # Desktop
                 $Shortcut = $WshShell.CreateShortcut("$DesktopDir\$AppName.lnk")
-                $Shortcut.TargetPath = "$target\$AppExe"
-                $Shortcut.WorkingDirectory = $target
-                $Shortcut.IconLocation = "$target\$AppExe"
+                $Shortcut.TargetPath = "$target\Tray\$AppExe"
+                $Shortcut.WorkingDirectory = "$target\Tray"
+                $Shortcut.IconLocation = "$target\Tray\$AppExe"
                 $Shortcut.Description = "Extract Images from PDF"
                 $Shortcut.Save()
             
                 # Start Menu
                 if (-not (Test-Path $StartMenuDir)) { New-Item -ItemType Directory -Path $StartMenuDir -Force | Out-Null }
                 $StartShortcut = $WshShell.CreateShortcut("$StartMenuDir\$AppName.lnk")
-                $StartShortcut.TargetPath = "$target\$AppExe"
-                $StartShortcut.WorkingDirectory = $target
-                $StartShortcut.IconLocation = "$target\$AppExe"
+                $StartShortcut.TargetPath = "$target\Tray\$AppExe"
+                $StartShortcut.WorkingDirectory = "$target\Tray"
+                $StartShortcut.IconLocation = "$target\Tray\$AppExe"
                 $StartShortcut.Save()
             
                 # Uninstaller
@@ -356,7 +356,7 @@ Start-Sleep -Seconds 1
 
 $controls.FinishBtn.Add_Click({
         $target = $controls.PathTextBox.Text
-        Start-Process "$target\$AppExe"
+        Start-Process "$target\Tray\$AppExe"
         $controls.Window.Close()
     })
 

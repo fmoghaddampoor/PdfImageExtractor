@@ -47,7 +47,14 @@ namespace PdfImageExtractor.Wpf.ViewModels
                 
                 if (!Directory.Exists(projectDir))
                 {
+                    // Production Structure 1: Nested in subdirectory (Legacy)
                     projectDir = Path.GetFullPath(Path.Combine(baseDir, "PdfImageExtractor.Blazor"));
+                }
+                
+                if (!Directory.Exists(projectDir))
+                {
+                    // Production Structure 2: Sibling 'Server' directory (New)
+                    projectDir = Path.GetFullPath(Path.Combine(baseDir, "..", "Server"));
                 }
 
                 string arguments;
