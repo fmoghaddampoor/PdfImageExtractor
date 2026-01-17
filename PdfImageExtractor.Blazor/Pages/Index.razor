@@ -1,0 +1,203 @@
+﻿@page "/"
+@using PdfImageExtractor.Blazor.Services
+@inject PdfService PdfService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>PDF Image Extractor</PageTitle>
+
+<div class="content-container">
+    <div class="glass-card">
+        <h1 style="margin-bottom: 2rem; font-weight: 800; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Extract Images from PDF
+        </h1>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger shadow-sm border-0 mb-4">
+                <i class="oi oi-warning me-2"></i> @ErrorMessage
+            </div>
+        }
+
+        @if (!ShowResults)
+        {
+            <div class="upload-view">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold">Export Format</label>
+                        <select class="form-select border-secondary" @bind="SelectedFormat">
+                            <option value="png">PNG (Lossless)</option>
+                            <option value="jpg">JPG (Compressed)</option>
+                            <option value="webp">WebP (Modern)</option>
+                            <option value="bmp">BMP (Legacy)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary fw-bold">DPI (Quality)</label>
+                        <select class="form-select border-secondary" @bind="Dpi">
+                            <option value="72">72 DPI (Screen)</option>
+                            <option value="150">150 DPI (Ebook)</option>
+                            <option value="300">300 DPI (Print)</option>
+                            <option value="450">450 DPI (High Quality)</option>
+                            <option value="600">600 DPI (Ultra High)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="drop-zone @(IsDragging ? "drag-over" : "")" 
+                     @ondragenter="() => IsDragging = true" 
+                     @ondragleave="() => IsDragging = false"
+                     @onover:prevent
+                     @onover:stopPropagation>
+                    <InputFile OnChange="OnInputFileChange" class="position-absolute opacity-0" style="width: 100%; height: 100%; top:0; left:0; cursor:pointer;" />
+                    <div class="py-4">
+                        <i class="oi oi-cloud-upload mb-3" style="font-size: 3rem; color: var(--accent-color);"></i>
+                        <h4 class="mb-2 text-primary">Drag and drop your PDF here</h4>
+                        <p class="text-secondary">or click to browse files</p>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (IsProcessing)
+        {
+            <div class="mt-4 text-center">
+                <div class="spinner-border text-primary shadow-sm" role="status"></div>
+                <p class="mt-2 text-secondary">Processing PDF pages... Please wait.</p>
+            </div>
+        }
+
+        @if (ShowResults && !IsProcessing)
+        {
+            <div class="results-view animate-fade-in">
+                <div class="mt-2 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <button class="btn btn-outline-secondary" @onclick="GoBack">
+                        <i class="oi oi-arrow-left me-2"></i> Check another file
+                    </button>
+                    <div class="d-flex gap-3 align-items-center">
+                        <span class="text-secondary fw-bold">@ExtractedImages.Count Images Extracted</span>
+                        <button class="btn btn-premium" @onclick="DownloadAll">
+                            <i class="oi oi-data-transfer-download me-2"></i> Download All as ZIP
+                        </button>
+                    </div>
+                </div>
+
+                <div class="image-gallery">
+                    @foreach (var img in ExtractedImagesWithMetadata)
+                    {
+                        <div class="image-card">
+                            <img src="data:image/@SelectedFormat;base64,@img.Base64" alt="Page @(img.Index + 1)" />
+                            <div class="card-footer">
+                                <span class="small text-white">Page @(img.Index + 1)</span>
+                                <button class="btn btn-sm btn-outline-light border-0" @onclick="() => DownloadImage(img.Index)">
+                                    <i class="oi oi-data-transfer-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string SelectedFormat { get; set; } = "png";
+    private int Dpi { get; set; } = 300;
+    private bool IsDragging { get; set; }
+    private bool IsProcessing { get; set; }
+    private bool ShowResults { get; set; }
+    private string? ErrorMessage { get; set; }
+    private List<byte[]> ExtractedImages { get; set; } = new();
+    private List<PageImage> ExtractedImagesWithMetadata { get; set; } = new();
+
+    private class PageImage
+    {
+        public int Index { get; set; }
+        public string Base64 { get; set; } = "";
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        IsProcessing = true;
+        ShowResults = false;
+        ExtractedImages.Clear();
+        ExtractedImagesWithMetadata.Clear();
+        ErrorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var file = e.File;
+            if (file != null && file.Name.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                using var stream = file.OpenReadStream(maxAllowedSize: 200 * 1024 * 1024); // 200MB max
+                ExtractedImages = await PdfService.ExtractPagesAsync(stream, SelectedFormat, Dpi);
+                
+                ExtractedImagesWithMetadata = ExtractedImages.Select((img, index) => new PageImage 
+                { 
+                    Index = index, 
+                    Base64 = Convert.ToBase64String(img) 
+                }).ToList();
+
+                ShowResults = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error processing PDF: {ex.Message}";
+            Console.WriteLine(ErrorMessage);
+        }
+        finally
+        {
+            IsProcessing = false;
+            IsDragging = false;
+            StateHasChanged();
+        }
+    }
+
+    private void GoBack()
+    {
+        ShowResults = false;
+        ExtractedImages.Clear();
+        ExtractedImagesWithMetadata.Clear();
+        StateHasChanged();
+    }
+
+    private async Task DownloadImage(int index)
+    {
+        var fileName = $"page_{index + 1}.{SelectedFormat}";
+        var base64 = ExtractedImagesWithMetadata.FirstOrDefault(m => m.Index == index)?.Base64;
+        if (base64 != null)
+        {
+            await JSRuntime.InvokeVoidAsync("downloadFile", fileName, $"data:image/{SelectedFormat};base64,{base64}");
+        }
+    }
+
+    private async Task DownloadAll()
+    {
+        if (!ExtractedImages.Any()) return;
+        
+        IsProcessing = true;
+        ErrorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var zipBytes = await PdfService.CreateZipAsync(ExtractedImages, SelectedFormat);
+            using var fileStream = new MemoryStream(zipBytes);
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+            var fileName = $"extracted_images_{DateTime.Now:yyyyMMddHHmmss}.zip";
+            await JSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error creating ZIP: {ex.Message}";
+        }
+        finally
+        {
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+}

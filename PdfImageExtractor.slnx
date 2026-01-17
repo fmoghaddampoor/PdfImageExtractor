@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PdfImageExtractor.Blazor/PdfImageExtractor.Blazor.csproj" />
+  <Project Path="PdfImageExtractor.Wpf/PdfImageExtractor.Wpf.csproj" />
+</Solution>

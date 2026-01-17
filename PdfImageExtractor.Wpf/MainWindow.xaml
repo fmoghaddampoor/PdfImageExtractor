@@ -1,0 +1,139 @@
+﻿<Window x:Class="PdfImageExtractor.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        Title="PdfImageExtractor" Height="265" Width="365"
+        Background="#1E1E1E" Foreground="White"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        WindowStyle="None" AllowsTransparency="True" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    
+    <Window.Resources>
+        <Style x:Key="FlatButton" TargetType="Button">
+            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#555555"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#555555"/>
+                    <Setter Property="BorderBrush" Value="#007ACC"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#222222"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource FlatButton}">
+            <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="BorderBrush" Value="#007ACC"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1C97EA"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border BorderBrush="#555555" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#2D2D2D" Padding="10,0">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Ellipse x:Name="StatusCircle" Width="10" Height="10" Fill="#bc2535" Margin="0,0,10,0"/>
+                        <TextBlock Text="PDF Image Extractor" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" Foreground="#AAAAAA" Click="Exit_Click" Width="30" Height="30"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Config -->
+            <StackPanel Grid.Row="1" Margin="20,15,20,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Local Server Port:" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+                    <TextBox x:Name="PortTextBox" Grid.Column="1" Text="5005" Padding="5" 
+                             Background="#2D2D2D" Foreground="White" BorderBrush="#555555" 
+                             HorizontalContentAlignment="Center"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- Actions -->
+            <Grid Grid.Row="2" Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="StartButton" Content="Start Service" Grid.Row="0" Grid.Column="0" 
+                        Style="{StaticResource FlatButton}" Foreground="#81c784" Click="StartButton_Click"/>
+                
+                <Button x:Name="StopButton" Content="Stop Service" Grid.Row="0" Grid.Column="1" 
+                        Style="{StaticResource FlatButton}" Foreground="#e57373" IsEnabled="False" Click="StopButton_Click"/>
+
+                <Button x:Name="OpenAppButton" Content="Open Web Application" Grid.Row="1" Grid.ColumnSpan="2" 
+                        Style="{StaticResource ActionButton}" IsEnabled="False" Click="OpenAppButton_Click" Height="40" Margin="5,10,5,5"/>
+            </Grid>
+
+            <!-- Footer -->
+            <Border Grid.Row="3" Background="#252526" Padding="10,0">
+                <Grid>
+                    <TextBlock x:Name="StatusTextBlock" Text="Service Offline" Foreground="#888888" FontSize="11" VerticalAlignment="Center"/>
+                    <TextBlock Text="v1.0.0" Foreground="#666666" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Tray Icon -->
+            <tb:TaskbarIcon x:Name="TrayIcon"
+                            ToolTipText="PDF Image Extractor"
+                            MenuActivation="LeftOrRightClick">
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu Background="#2D2D2D" Foreground="White" BorderThickness="1" BorderBrush="#555555">
+                        <MenuItem Header="Open Controller" Click="Show_Click" FontWeight="Bold"/>
+                        <MenuItem x:Name="TrayOpenApp" Header="Open Web App" Click="OpenAppButton_Click" IsEnabled="False"/>
+                        <Separator Background="#444444"/>
+                        <MenuItem Header="Start Service" Click="StartButton_Click"/>
+                        <MenuItem Header="Stop Service" Click="StopButton_Click"/>
+                        <Separator Background="#444444"/>
+                        <MenuItem Header="Exit" Click="Exit_Click"/>
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
+        </Grid>
+    </Border>
+</Window>

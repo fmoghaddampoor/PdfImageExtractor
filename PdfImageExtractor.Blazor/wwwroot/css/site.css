@@ -1,0 +1,140 @@
+:root {
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --accent-color: #4f46e5;
+    --accent-glow: rgba(79, 70, 229, 0.4);
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --glass-border: #e2e8f0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.main-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.content-container {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Drag & Drop Zone */
+.drop-zone {
+    position: relative;
+    border: 2px dashed var(--glass-border);
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: #f1f5f9;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+    border-color: var(--accent-color);
+    background: #e0e7ff;
+    box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.btn-premium {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+    filter: brightness(1.1);
+}
+
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.image-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    transition: transform 0.3s ease;
+}
+
+.image-card:hover {
+    transform: scale(1.03);
+}
+
+.image-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.card-footer {
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.loading-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Hide default scrollbar but keep functionality */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
