@@ -101,7 +101,8 @@ public partial class MainWindow : Window
 
             StatusTextBlock.Text = "Service Online";
             StatusTextBlock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(129, 199, 132)); // Light Green
-            StatusCircle.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(40, 135, 53)); // Dark Green
+            StatusTextBlock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(129, 199, 132)); // Light Green
+            // StatusCircle updated removed for consistent icon
             
             StartButton.IsEnabled = false;
             StopButton.IsEnabled = true;
@@ -143,7 +144,7 @@ public partial class MainWindow : Window
         _serverProcess = null;
         StatusTextBlock.Text = "Service Offline";
         StatusTextBlock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(136, 136, 136)); // Grey
-        StatusCircle.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(188, 37, 53)); // Red
+        StatusTextBlock.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(136, 136, 136)); // Grey
 
         StartButton.IsEnabled = true;
         StopButton.IsEnabled = false;

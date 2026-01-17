@@ -66,7 +66,7 @@
             <Border Grid.Row="0" Background="#2D2D2D" Padding="10,0">
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Ellipse x:Name="StatusCircle" Width="10" Height="10" Fill="#bc2535" Margin="0,0,10,0"/>
+                        <Image Source="logo.png" Width="20" Height="20" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Text="PDF Image Extractor" FontWeight="SemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -123,14 +123,60 @@
                             ToolTipText="PDF Image Extractor"
                             MenuActivation="LeftOrRightClick">
                 <tb:TaskbarIcon.ContextMenu>
-                    <ContextMenu Background="#2D2D2D" Foreground="White" BorderThickness="1" BorderBrush="#555555">
-                        <MenuItem Header="Open Controller" Click="Show_Click" FontWeight="Bold"/>
+                    <ContextMenu Background="White" Foreground="#333333" BorderThickness="0" Padding="0">
+                        <ContextMenu.Resources>
+                            <Style TargetType="ContextMenu">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ContextMenu">
+                                            <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4">
+                                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" Margin="0,4"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                            <Style TargetType="MenuItem">
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="Padding" Value="16,8"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="MenuItem">
+                                            <Border x:Name="Border" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                                                <Grid>
+                                                    <ContentPresenter Content="{TemplateBinding Header}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsHighlighted" Value="True">
+                                                    <Setter TargetName="Border" Property="Background" Value="#F5F5F7"/>
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter TargetName="Border" Property="Opacity" Value="0.5"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                            <Style TargetType="Separator">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Separator}">
+                                            <Border BorderBrush="#E0E0E0" BorderThickness="1" Margin="10,4,10,4"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ContextMenu.Resources>
+                        <MenuItem Header="Open Controller" Click="Show_Click" FontWeight="SemiBold"/>
                         <MenuItem x:Name="TrayOpenApp" Header="Open Web App" Click="OpenAppButton_Click" IsEnabled="False"/>
-                        <Separator Background="#444444"/>
+                        <Separator/>
                         <MenuItem Header="Start Service" Click="StartButton_Click"/>
                         <MenuItem Header="Stop Service" Click="StopButton_Click"/>
-                        <Separator Background="#444444"/>
-                        <MenuItem Header="Exit" Click="Exit_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Exit" Click="Exit_Click" Foreground="#D32F2F"/>
                     </ContextMenu>
                 </tb:TaskbarIcon.ContextMenu>
             </tb:TaskbarIcon>
