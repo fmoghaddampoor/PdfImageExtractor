@@ -3,18 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         Title="PdfImageExtractor" Height="265" Width="365"
-        Background="#1E1E1E" Foreground="White"
-        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-        WindowStyle="None" AllowsTransparency="True" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    Background="#F9F9F9" Foreground="#333333"
+    WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+    WindowStyle="None" AllowsTransparency="True" MouseLeftButtonDown="Window_MouseLeftButtonDown">
     
     <Window.Resources>
         <Style x:Key="FlatButton" TargetType="Button">
-            <Setter Property="Background" Value="#333333"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333333"/>
             <Setter Property="Padding" Value="10,5"/>
             <Setter Property="Margin" Value="5"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#555555"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -30,30 +30,39 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#555555"/>
-                    <Setter Property="BorderBrush" Value="#007ACC"/>
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                    <Setter Property="BorderBrush" Value="#999999"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#222222"/>
+                    <Setter Property="Background" Value="#E0E0E0"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value="0.5"/>
+                    <Setter Property="Background" Value="#F5F5F5"/>
+                    <Setter Property="Foreground" Value="#AAAAAA"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource FlatButton}">
             <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderBrush" Value="#007ACC"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#1C97EA"/>
+                    <Setter Property="BorderBrush" Value="#1C97EA"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.6"/>
+                    <Setter Property="Background" Value="#007ACC"/>
+                    <Setter Property="Foreground" Value="White"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
     </Window.Resources>
 
-    <Border BorderBrush="#555555" BorderThickness="1">
+    <Border BorderBrush="#CCCCCC" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
@@ -63,14 +72,14 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <Border Grid.Row="0" Background="#2D2D2D" Padding="10,0">
+            <Border Grid.Row="0" Background="White" Padding="10,0" BorderThickness="0,0,0,1" BorderBrush="#EEEEEE">
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Image Source="logo.png" Width="20" Height="20" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Text="PDF Image Extractor" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Text="PDF Image Extractor" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="#333333"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" Foreground="#AAAAAA" Click="Exit_Click" Width="30" Height="30"/>
+                        <Button Content="" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" Foreground="#666666" Click="Exit_Click" Width="30" Height="30" Padding="0"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -82,9 +91,9 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="60"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Local Server Port:" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+                    <TextBlock Text="Local Server Port:" Foreground="#666666" VerticalAlignment="Center"/>
                     <TextBox x:Name="PortTextBox" Grid.Column="1" Text="5005" Padding="5" 
-                             Background="#2D2D2D" Foreground="White" BorderBrush="#555555" 
+                             Background="White" Foreground="#333333" BorderBrush="#CCCCCC" 
                              HorizontalContentAlignment="Center"/>
                 </Grid>
             </StackPanel>
@@ -101,20 +110,20 @@
                 </Grid.ColumnDefinitions>
 
                 <Button x:Name="StartButton" Content="Start Service" Grid.Row="0" Grid.Column="0" 
-                        Style="{StaticResource FlatButton}" Foreground="#81c784" Click="StartButton_Click"/>
+                        Style="{StaticResource FlatButton}" Foreground="#2E7D32" FontWeight="SemiBold" Click="StartButton_Click"/>
                 
                 <Button x:Name="StopButton" Content="Stop Service" Grid.Row="0" Grid.Column="1" 
-                        Style="{StaticResource FlatButton}" Foreground="#e57373" IsEnabled="False" Click="StopButton_Click"/>
+                        Style="{StaticResource FlatButton}" Foreground="#C62828" FontWeight="SemiBold" IsEnabled="False" Click="StopButton_Click"/>
 
                 <Button x:Name="OpenAppButton" Content="Open Web Application" Grid.Row="1" Grid.ColumnSpan="2" 
                         Style="{StaticResource ActionButton}" IsEnabled="False" Click="OpenAppButton_Click" Height="40" Margin="5,10,5,5"/>
             </Grid>
 
             <!-- Footer -->
-            <Border Grid.Row="3" Background="#252526" Padding="10,0">
+            <Border Grid.Row="3" Background="#F5F5F5" Padding="10,0" BorderThickness="0,1,0,0" BorderBrush="#EEEEEE">
                 <Grid>
                     <TextBlock x:Name="StatusTextBlock" Text="Service Offline" Foreground="#888888" FontSize="11" VerticalAlignment="Center"/>
-                    <TextBlock Text="v1.0.0" Foreground="#666666" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBlock Text="v1.0.0" Foreground="#AAAAAA" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
 
