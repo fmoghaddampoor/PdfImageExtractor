@@ -8,7 +8,7 @@
 <div class="content-container">
     <div class="glass-card">
         <h1 style="margin-bottom: 2rem; font-weight: 800; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            Extract Images from PDF
+            Extract Images from PDF <span style="font-size: 0.5em; color: #aaa; vertical-align: middle;">v2.1 DEBUG</span>
         </h1>
 
         @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -82,13 +82,13 @@
                 </div>
 
                 <div class="image-gallery">
-                    @foreach (var img in ExtractedImagesWithMetadata)
+                    @foreach (var img in ExtractedImages)
                     {
                         <div class="image-card">
-                            <img src="data:image/@SelectedFormat;base64,@img.Base64" alt="Page @(img.Index + 1)" />
+                            <img src="data:image/jpeg;base64,@img.PreviewBase64" alt="Page @img.PageNumber" />
                             <div class="card-footer">
-                                <span class="small text-white">Page @(img.Index + 1)</span>
-                                <button class="btn btn-sm btn-outline-light border-0" @onclick="() => DownloadImage(img.Index)">
+                                <span class="small text-secondary">Page @img.PageNumber</span>
+                                <button class="btn btn-sm btn-outline-light border-0" @onclick="() => DownloadImage(img.PageNumber)">
                                     <i class="oi oi-data-transfer-download"></i>
                                 </button>
                             </div>
@@ -107,21 +107,13 @@
     private bool IsProcessing { get; set; }
     private bool ShowResults { get; set; }
     private string? ErrorMessage { get; set; }
-    private List<byte[]> ExtractedImages { get; set; } = new();
-    private List<PageImage> ExtractedImagesWithMetadata { get; set; } = new();
-
-    private class PageImage
-    {
-        public int Index { get; set; }
-        public string Base64 { get; set; } = "";
-    }
+    private List<ExtractedPage> ExtractedImages { get; set; } = new();
 
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
         IsProcessing = true;
         ShowResults = false;
         ExtractedImages.Clear();
-        ExtractedImagesWithMetadata.Clear();
         ErrorMessage = null;
         StateHasChanged();
 
@@ -132,13 +124,6 @@
             {
                 using var stream = file.OpenReadStream(maxAllowedSize: 200 * 1024 * 1024); // 200MB max
                 ExtractedImages = await PdfService.ExtractPagesAsync(stream, SelectedFormat, Dpi);
-                
-                ExtractedImagesWithMetadata = ExtractedImages.Select((img, index) => new PageImage 
-                { 
-                    Index = index, 
-                    Base64 = Convert.ToBase64String(img) 
-                }).ToList();
-
                 ShowResults = true;
             }
         }
@@ -159,17 +144,18 @@
     {
         ShowResults = false;
         ExtractedImages.Clear();
-        ExtractedImagesWithMetadata.Clear();
         StateHasChanged();
     }
 
-    private async Task DownloadImage(int index)
+    private async Task DownloadImage(int pageNumber)
     {
-        var fileName = $"page_{index + 1}.{SelectedFormat}";
-        var base64 = ExtractedImagesWithMetadata.FirstOrDefault(m => m.Index == index)?.Base64;
-        if (base64 != null)
+        var fileName = $"page_{pageNumber}.{SelectedFormat}";
+        var page = ExtractedImages.FirstOrDefault(m => m.PageNumber == pageNumber);
+        if (page != null)
         {
-            await JSRuntime.InvokeVoidAsync("downloadFile", fileName, $"data:image/{SelectedFormat};base64,{base64}");
+            using var fileStream = new MemoryStream(page.Data);
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
+            await JSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
         }
     }
 
